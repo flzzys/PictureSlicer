@@ -21,6 +21,9 @@ public class PictureSlicer : MonoBehaviour {
     public PictureSlicerHandle handle_BottomLeft;
     public PictureSlicerHandle handle_BottomRight;
 
+    //最小边长
+    public int minWidth = 200;
+
     private void Awake() {
         size = picture.sizeDelta;
 
@@ -114,7 +117,7 @@ public class PictureSlicer : MonoBehaviour {
             Vector2 targetDir = handleDic[currentHandle];
 
             //不动点位置
-            Vector2 originPos = (Vector2)Camera.main.WorldToScreenPoint(handle_Main.transform.position) + -targetDir * mainHandleSize / 2;
+            Vector2 originPos = (Vector2)Camera.main.WorldToScreenPoint(handle_Main.transform.position) - targetDir * mainHandleSize / 2;
 
             //动点位置
             Vector2 desiredPos = (Vector2)Input.mousePosition + mouseOffset;
@@ -126,11 +129,26 @@ public class PictureSlicer : MonoBehaviour {
             //获取最短边
             Vector2 desiredPosOffset = desiredPos - originPos;
             float shortest = Mathf.Min(Mathf.Abs(desiredPosOffset.x), Mathf.Abs(desiredPosOffset.y));
+            shortest = Mathf.Max(shortest, minWidth);
             desiredPos = originPos + targetDir * shortest;
+
+            //如果抵达边缘，改为移动不动点
+            //if (!IsWithinArea(desiredPos)) {
+            //    originPos = desiredPos - targetDir * (desiredPos - originPos);
+            //}
 
             //修改截取器尺寸位置
             Set(originPos, desiredPos);
         }
+    }
+
+    bool IsWithinArea(Vector2 uiPos) {
+        //获取可动范围内
+        Vector2 center = Camera.main.WorldToScreenPoint(picture.transform.position);
+        Vector2 movementAreaTopRight = center + size / 2;
+        Vector2 movementAreaBottomLeft = center - size / 2;
+
+        return uiPos.x > movementAreaBottomLeft.x && uiPos.x < movementAreaTopRight.x && uiPos.y > movementAreaBottomLeft.y && uiPos.y < movementAreaTopRight.y;
     }
 
     //将目标位置限制在可动范围内
@@ -171,6 +189,11 @@ public class PictureSlicer : MonoBehaviour {
     //设置截取器尺寸
     void SetSize(Vector2 size) {
         handle_Main.GetComponent<RectTransform>().sizeDelta = size;
+
+        //修改把手尺寸
+        foreach (var handle in handleDic.Keys) {
+            handle.transform.localScale = size / picture.sizeDelta;
+        }
     }
 
     #endregion
@@ -209,7 +232,7 @@ public class PictureSlicer : MonoBehaviour {
 
         sliceData.zoom = mainHandleSize.x / size.x;
 
-        print("offset: " + sliceData.offset.ToString("f4") + ", zoom: " + sliceData.zoom);
+        //print("offset: " + sliceData.offset.ToString("f4") + ", zoom: " + sliceData.zoom);
 
         return sliceData;
     }
