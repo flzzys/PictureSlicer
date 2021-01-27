@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//截取数据
+public struct SliceData {
+    public Vector2 offset;
+    public float zoom;
+}
+
 public class PictureSlicer : MonoBehaviour {
     public RectTransform picture;
 
@@ -25,15 +31,6 @@ public class PictureSlicer : MonoBehaviour {
     private void Update() {
         UpdateMoving();
         UpdateHandles();
-
-        if (Input.GetKeyDown("1")) {
-            Fill();
-        }
-        if (Input.GetKeyDown("2")) {
-            Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            Set(picture.transform.position, mouse);
-        }
     }
 
     #region 截取器移动
@@ -198,6 +195,23 @@ public class PictureSlicer : MonoBehaviour {
         //中心
         Vector2 center = pos1 + (pos2 - pos1) / 2;
         TryMove(center);
+    }
+
+    //获取截图数据
+    public SliceData GetSliceData() {
+        SliceData sliceData = new SliceData();
+
+        Vector2 size2 = Camera.main.ScreenToWorldPoint((Vector2)Camera.main.WorldToScreenPoint(picture.transform.position) + size / 2);
+        sliceData.offset = handle_Main.transform.position - picture.transform.position;
+        //print(sliceData.offset);
+        sliceData.offset /= size2.x;
+        //print(sliceData.offset);
+
+        sliceData.zoom = mainHandleSize.x / size.x;
+
+        print("offset: " + sliceData.offset.ToString("f4") + ", zoom: " + sliceData.zoom);
+
+        return sliceData;
     }
 
     #endregion
