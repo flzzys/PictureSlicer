@@ -344,8 +344,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1}
-  m_SizeDelta: {x: 1818.1443, y: 958.78723}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 958, y: 958}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &215591009
 MonoBehaviour:
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5efda47dd0aecb748a435f0f89c90f64, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 703dae34ca76fa04088018a6612e509e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1504,9 +1504,9 @@ RectTransform:
   m_Father: {fileID: 47890428}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -235.5}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 724.5}
   m_SizeDelta: {x: 1038, y: 1038}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1457285388
@@ -1521,7 +1521,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7544f3b99db61429b4adea2ec76a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sizeManipulator: {fileID: 1638231787}
+  picture: {fileID: 215591008}
+  handle_Main: {fileID: 1638231790}
+  handle_TopLeft: {fileID: 1454406325}
+  handle_TopRight: {fileID: 1354368879}
+  handle_BottomLeft: {fileID: 1343043552}
+  handle_BottomRight: {fileID: 33745102}
 --- !u!1 &1638231785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1531,7 +1536,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1638231786}
-  - component: {fileID: 1638231787}
+  - component: {fileID: 1638231790}
+  - component: {fileID: 1638231789}
+  - component: {fileID: 1638231788}
   m_Layer: 5
   m_Name: SizeManipulator
   m_TagString: Untagged
@@ -1568,7 +1575,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 446.224, y: 446.224}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1638231787
+--- !u!114 &1638231788
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1577,19 +1584,46 @@ MonoBehaviour:
   m_GameObject: {fileID: 1638231785}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2653d296394fbc42ae102d352f1f184, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  siliceParent: {fileID: 0}
-  handle_TopLeft: {fileID: 1454406325}
-  handle_TopRight: {fileID: 1354368879}
-  handle_BottomLeft: {fileID: 1343043552}
-  handle_BottomRight: {fileID: 33745102}
-  handle_Top: {fileID: 442294758}
-  handle_Right: {fileID: 1665288744}
-  handle_Bottom: {fileID: 243108929}
-  handle_Left: {fileID: 1804396447}
-  rt: {fileID: 1454406324}
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1638231789
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638231785}
+  m_CullTransparentMesh: 0
+--- !u!114 &1638231790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638231785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e927f4a968821134f8ff5f1b25f92630, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1665288742
 GameObject:
   m_ObjectHideFlags: 0
@@ -1695,7 +1729,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1774661985
 RectTransform:
   m_ObjectHideFlags: 0
