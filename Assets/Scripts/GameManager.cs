@@ -29,9 +29,9 @@ public class GameManager : MonoBehaviour {
 
     float ScreenFloatToWorldFloat(float screenFloat) {
         float ratio = Screen.height / (Camera.main.orthographicSize * 2);
-        print($"height:{Screen.height}");
-        print(Camera.main.orthographicSize * 2);
-        print(ratio);
+        //print($"height:{Screen.height}");
+        //print(Camera.main.orthographicSize * 2);
+        //print(ratio);
 
         return screenFloat / ratio;
     }

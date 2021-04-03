@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 //截取数据
 public struct SliceData {
@@ -9,7 +10,7 @@ public struct SliceData {
 }
 
 public class PictureSlicer : MonoBehaviour {
-    public RectTransform picture;
+    public Image picture;
 
     //图片尺寸
     Vector2 size;
@@ -24,21 +25,8 @@ public class PictureSlicer : MonoBehaviour {
     //最小边长
     public int minWidth = 200;
 
-    //private void OnDrawGizmos() {
-    //    print(ScreenFloatToWorldFloat(size.x).ToString("f4"));
-    //    Gizmos.DrawWireCube((Vector2)transform.position, Vector3.one * 2);
-    //}
-
-    //float ScreenFloatToWorldFloat(float screenFloat) {
-    //    float ratio = Screen.height / Camera.main.orthographicSize * 2;
-    //    //print(ratio);
-
-    //    return screenFloat / ratio;
-    //}
-
     private void Awake() {
-        size = picture.sizeDelta * transform.localScale.x;
-        //size = picture.sizeDelta;
+        size = picture.rectTransform.sizeDelta;
 
         InitMoving();
         InitHandles();
@@ -126,7 +114,7 @@ public class PictureSlicer : MonoBehaviour {
 
     //更新把手位置
     void UpdateHandles() {
-        if(currentHandle != null) {
+        if (currentHandle != null) {
             Vector2 targetDir = handleDic[currentHandle];
 
             //不动点位置
@@ -205,7 +193,7 @@ public class PictureSlicer : MonoBehaviour {
 
         //修改把手尺寸
         foreach (var handle in handleDic.Keys) {
-            handle.transform.localScale = size / picture.sizeDelta;
+            handle.transform.localScale = size / picture.rectTransform.sizeDelta;
         }
     }
 
@@ -213,13 +201,22 @@ public class PictureSlicer : MonoBehaviour {
 
     #region 其他
 
+    //居中
+    public void Center() {
+        //设置尺寸为图片尺寸
+        SetSize(size / 2);
+
+        //移动到中心
+        TryMove(Camera.main.WorldToScreenPoint(transform.position));
+    }
+
     //将图片裁剪器填满整张图
     void Fill() {
         //设置尺寸为图片尺寸
         SetSize(size);
 
         //移动到中心
-        TryMove(transform.position);
+        TryMove(Camera.main.WorldToScreenPoint(transform.position));
     }
 
     //通过两个点设置截取器位置和尺寸
@@ -239,13 +236,9 @@ public class PictureSlicer : MonoBehaviour {
 
         Vector2 size2 = Camera.main.ScreenToWorldPoint((Vector2)Camera.main.WorldToScreenPoint(picture.transform.position) + size / 2);
         sliceData.offset = handle_Main.transform.position - picture.transform.position;
-        //print(sliceData.offset);
         sliceData.offset /= size2.x;
-        //print(sliceData.offset);
 
         sliceData.zoom = mainHandleSize.x / size.x;
-
-        //print("offset: " + sliceData.offset.ToString("f4") + ", zoom: " + sliceData.zoom);
 
         return sliceData;
     }
