@@ -26,4 +26,23 @@ public class GameManager : MonoBehaviour {
         image.rectTransform.anchoredPosition = -image.transform.parent.GetComponent<RectTransform>().sizeDelta * sliceData.offset / sliceData.zoom / 2;
         image.transform.localScale = Vector3.one * (1 / sliceData.zoom);
     }
+
+    float ScreenFloatToWorldFloat(float screenFloat) {
+        float ratio = Screen.height / (Camera.main.orthographicSize * 2);
+        print($"height:{Screen.height}");
+        print(Camera.main.orthographicSize * 2);
+        print(ratio);
+
+        return screenFloat / ratio;
+    }
+
+    private void Start() {
+        print(ScreenFloatToWorldFloat(100));
+
+    }
+
+    private void OnDrawGizmos() {
+        //print(ScreenFloatToWorldFloat(100));
+        Gizmos.DrawWireCube((Vector2)transform.position, Vector3.one * ScreenFloatToWorldFloat(100));
+    }
 }

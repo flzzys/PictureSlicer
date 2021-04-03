@@ -24,8 +24,21 @@ public class PictureSlicer : MonoBehaviour {
     //最小边长
     public int minWidth = 200;
 
+    //private void OnDrawGizmos() {
+    //    print(ScreenFloatToWorldFloat(size.x).ToString("f4"));
+    //    Gizmos.DrawWireCube((Vector2)transform.position, Vector3.one * 2);
+    //}
+
+    //float ScreenFloatToWorldFloat(float screenFloat) {
+    //    float ratio = Screen.height / Camera.main.orthographicSize * 2;
+    //    //print(ratio);
+
+    //    return screenFloat / ratio;
+    //}
+
     private void Awake() {
-        size = picture.sizeDelta;
+        size = picture.sizeDelta * transform.localScale.x;
+        //size = picture.sizeDelta;
 
         InitMoving();
         InitHandles();
