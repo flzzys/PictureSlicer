@@ -25,8 +25,11 @@ public class PictureSlicer : MonoBehaviour {
     //最小边长
     public int minWidth = 200;
 
+    Camera cam;
+
     private void Awake() {
-        size = picture.rectTransform.sizeDelta;
+        cam = Camera.main;
+        size = picture.rectTransform.rect.size;
 
         InitMoving();
         InitHandles();
@@ -44,13 +47,15 @@ public class PictureSlicer : MonoBehaviour {
 
     //鼠标和本体的偏移量
     Vector2 mouseOffset;
-
+    Vector2 centerPos;
     //初始化移动数据
     void InitMoving() {
         handle_Main.onMouseDown = handle => {
             moving = true;
 
-            mouseOffset = Camera.main.WorldToScreenPoint(handle_Main.transform.position) - Input.mousePosition;
+            centerPos = cam.WorldToScreenPoint(handle_Main.transform.position);
+            mouseOffset = (Vector2)Input.mousePosition - centerPos;
+            //print(mouseOffset);
         };
         handle_Main.onMouseUp = handle => {
             moving = false;
@@ -61,8 +66,9 @@ public class PictureSlicer : MonoBehaviour {
     void UpdateMoving() {
         if (moving) {
             //移动的目标位置
-            Vector2 desiredPos = (Vector2)Input.mousePosition + mouseOffset;
-
+            //Vector2 targetPos = Input.mousePosition + mouseOffset;
+            Vector2 desiredPos = ((Vector2)Input.mousePosition - mouseOffset) - centerPos;
+            //print(desiredPos);
             TryMove(desiredPos);
         }
     }
@@ -70,23 +76,24 @@ public class PictureSlicer : MonoBehaviour {
     //尝试移动，不会移动到范围外
     void TryMove(Vector2 uiPos) {
         //将目标位置限制在可动范围内
-        uiPos = GetClampedPos(uiPos);
-
+        //uiPos = GetClampedPos(uiPos);
+        
         //移动
-        handle_Main.transform.position = (Vector2)Camera.main.ScreenToWorldPoint(uiPos);
+        handle_Main.GetComponent<RectTransform>().anchoredPosition = uiPos;
     }
 
     //将目标位置限制在可动范围内
     Vector2 GetClampedPos(Vector2 uiPos) {
         //获取可动范围内
-        Vector2 center = Camera.main.WorldToScreenPoint(picture.transform.position);
-        Vector2 movementAreaTopRight = center + size / 2 - mainHandleSize / 2;
-        Vector2 movementAreaBottomLeft = center - size / 2 + mainHandleSize / 2;
+        Vector2 center = Vector2.zero;
+        float radius = (size.x - mainHandleSize.x) / 2;
+        Vector2 movementAreaTopRight = center + Vector2.one * radius;
+        Vector2 movementAreaBottomLeft = center - Vector2.one * radius;
 
         //将目标位置限制在可动范围内
         uiPos.x = Mathf.Clamp(uiPos.x, movementAreaBottomLeft.x, movementAreaTopRight.x);
         uiPos.y = Mathf.Clamp(uiPos.y, movementAreaBottomLeft.y, movementAreaTopRight.y);
-
+        //print(uiPos);
         return uiPos;
     }
 
