@@ -15,6 +15,8 @@ public struct SliceData {
 
 public class PictureSlicer : MonoBehaviour {
     public Image picture;
+
+    //截取区域显示器
     public SlicedPictureDisplay slicedPictureDisplay;
 
     //图片尺寸
@@ -24,13 +26,6 @@ public class PictureSlicer : MonoBehaviour {
     //截取器尺寸
     Vector2 mainHandleSize { get { return handle_Main.GetComponent<RectTransform>().rect.size; } }
 
-    //把手
-    public PictureSlicerHandle handle_Main;
-    public PictureSlicerHandle handle_TopLeft;
-    public PictureSlicerHandle handle_TopRight;
-    public PictureSlicerHandle handle_BottomLeft;
-    public PictureSlicerHandle handle_BottomRight;
-
     //最小截图器宽度
     public float minWidth = 200;
     public float minHeight { get { return minWidth / ratio; } }
@@ -38,13 +33,11 @@ public class PictureSlicer : MonoBehaviour {
     [Header("宽高比")]
     public float ratio = 1;
 
-    Vector2 canvasMovementRate;
-
-    Vector2 mouseStartingPos;
-
-    Vector3 prevMousePos;
+    new Camera camera;
 
     private void Awake() {
+        camera = Camera.main;
+
         InitMoving();
         InitHandles();
 
@@ -56,8 +49,27 @@ public class PictureSlicer : MonoBehaviour {
     }
 
     private void Update() {
-        if(currentHandle != null || moving) {
-            if(Input.mousePosition != prevMousePos) {
+        UpdateMouseMove();
+
+        UpdateMoving();
+
+        UpdateHandles();
+    }
+
+    #region 鼠标移动
+
+    Vector2 canvasMovementRate;
+
+    Vector2 mouseStartingPos;
+
+    Vector3 prevMousePos;
+
+    void UpdateMouseMove()
+    {
+        if (currentHandle != null || moving)
+        {
+            if (Input.mousePosition != prevMousePos)
+            {
                 //鼠标相对点击位置的位移
                 Vector2 mouseOffset = (Vector2)Input.mousePosition - mouseStartingPos;
 
@@ -69,17 +81,18 @@ public class PictureSlicer : MonoBehaviour {
 
                 //鼠标移动率换算到该Canvas移动率
                 canvasMovementRate = new Vector2(mouseMovementRate.x * canvasSize.x, mouseMovementRate.y * canvasSize.y);
-
+                canvasMovementRate /= transform.localScale;
                 prevMousePos = Input.mousePosition;
 
-                if(slicedPictureDisplay)
+                print(GetSliceData());
+
+                if (slicedPictureDisplay)
                     slicedPictureDisplay.Set(GetSliceData());
             }
         }
-
-        UpdateMoving();
-        UpdateHandles();
     }
+
+    #endregion
 
     #region 截取器移动
 
@@ -136,6 +149,13 @@ public class PictureSlicer : MonoBehaviour {
 
     #region 缩放把手们
 
+    //把手
+    public PictureSlicerHandle handle_Main;
+    public PictureSlicerHandle handle_TopLeft;
+    public PictureSlicerHandle handle_TopRight;
+    public PictureSlicerHandle handle_BottomLeft;
+    public PictureSlicerHandle handle_BottomRight;
+
     Dictionary<PictureSlicerHandle, Vector2> handleDic = new Dictionary<PictureSlicerHandle, Vector2>();
 
     PictureSlicerHandle currentHandle;
@@ -156,6 +176,8 @@ public class PictureSlicer : MonoBehaviour {
         }
     }
 
+    #region 点击和松开把手
+
     //鼠标按下和松开把手
     void Handle_OnMouseDown(PictureSlicerHandle handle) {
         currentHandle = handle;
@@ -168,6 +190,8 @@ public class PictureSlicer : MonoBehaviour {
     void Handle_OnMouseUp(PictureSlicerHandle handle) {
         currentHandle = null;
     }
+
+    #endregion
 
     //更新把手位置
     void UpdateHandles() {
@@ -184,16 +208,9 @@ public class PictureSlicer : MonoBehaviour {
             Vector2 handlePos = handle_Main.GetComponent<RectTransform>().anchoredPosition;
 
             //限制范围
-            if(desiredPos.x > pictureRectSize.x / 2 * targetDir.x || (desiredPos.x - originPos.x) < minWidth) {
+            if (desiredPos.x * targetDir.x > pictureRectSize.x / 2 || Mathf.Abs(desiredPos.x - originPos.x) < minWidth) {
                 return;
             }
-
-            //if (desiredPos.x * targetDir.x < originPos.x || (desiredPos.y - handlePos.y) * targetDir.y < (originPos.y - handlePos.y)) {
-            //    return;
-            //}
-
-            print(desiredPos.y + ", " + originPos.y);
-
 
             //修正宽高比
             Vector2 desiredPosOffset = desiredPos - originPos;
@@ -213,7 +230,7 @@ public class PictureSlicer : MonoBehaviour {
             desiredPos = new Vector2(originPos.x + targetDir.x * width, originPos.y + targetDir.y * height);
 
             //限制在范围内
-            //desiredPos = GetClampedHandlePos(desiredPos);
+            desiredPos = GetClampedHandlePos(desiredPos);
 
             //修改截取器尺寸位置
             Set(originPos, desiredPos);
@@ -222,7 +239,7 @@ public class PictureSlicer : MonoBehaviour {
 
     bool IsWithinArea(Vector2 uiPos) {
         //获取可动范围内
-        Vector2 center = Camera.main.WorldToScreenPoint(picture.transform.position);
+        Vector2 center = camera.WorldToScreenPoint(picture.transform.position);
         Vector2 movementAreaTopRight = center + pictureRectSize / 2;
         Vector2 movementAreaBottomLeft = center - pictureRectSize / 2;
 
@@ -309,7 +326,7 @@ public class PictureSlicer : MonoBehaviour {
         SetSize(pictureRectSize);
 
         //移动到中心
-        TryMove(Camera.main.WorldToScreenPoint(transform.position));
+        TryMove(camera.WorldToScreenPoint(transform.position));
     }
 
     //通过两个点设置截取器位置和尺寸
@@ -321,6 +338,11 @@ public class PictureSlicer : MonoBehaviour {
         //中心
         Vector2 center = pos1 + (pos2 - pos1) / 2;
         TryMove(center);
+
+        foreach (var item in handleDic.Keys)
+        {
+            item.clickArea.localScale = size / pictureRectSize;
+        }
     }
 
     //获取截图数据

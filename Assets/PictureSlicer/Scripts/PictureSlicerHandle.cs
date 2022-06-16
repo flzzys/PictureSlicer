@@ -7,6 +7,8 @@ using System;
 public class PictureSlicerHandle : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
     public Action<PictureSlicerHandle> onMouseDown, onMouseUp;
 
+    public Transform clickArea;
+
     void IPointerDownHandler.OnPointerDown(PointerEventData eventData) {
         onMouseDown?.Invoke(this);
     }
